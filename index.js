@@ -28,6 +28,17 @@ app.get('/webhook', (req, res) => {
 });
 
 // 2. ด่านสอง: รับข้อมูลแชทจริง และระบบตอบกลับอัตโนมัติ (Auto-response)
+async function sendMessage(senderId, messageText) {
+  const url = `https://graph.facebook.com/v21.0/me/messages?access_token=${PAGE_ACCESS_TOKEN}`;
+  try {
+    await axios.post(url, {
+      recipient: { id: senderId },
+      message: { text: messageText }
+    });
+  } catch (error) {
+    console.error('Error sending message:', error.response ? error.response.data : error.message);
+  }
+}
 app.post('/webhook', (req, res) => {
     let body = req.body;
 
@@ -62,8 +73,8 @@ function handleMessage(sender_psid, customer_text) {
     if (customer_text.includes("เมนู") || customer_text.includes("ราคา") || customer_text.includes("สนใจ") || customer_text.includes("กี่บาท")) {
         response_message = "หรอยแรง! สนใจเมนูไหนเลือกได้เลยน้าา วันนี้ร้าน เติบ มากับลูกตอ มีเมนูเด็ดแนะนำครับ:\n\n" +
                            "1. สะตอผัดกะปิกุ้งสดสด - ฿180\n" +
-                           "2. แกงไตปลาทรงเครื่องใต้แท้ - ฿150\n" +
-                           "3. คั่วกลิ้งหมูสับเผ็ดจัดจ้าน - ฿120\n\n" +
+                           "2. สันคอหมูสไลด์ผัดกับกะปิกุ้งแท้ - ฿150\n" +
+                           "3. หมุสามชั้นผัดเครื่องแกงใต้จัดจ้าน - ฿120\n\n" +
                            "คุณลูกค้าสามารถพิมพ์ระบุเมนูและจำนวนที่ต้องการสั่งซื้อเข้ามาได้เลยนะคะ เดี๋ยวแอดมินสรุปยอดให้ค่ะ! 🌶️สะตอ";
     } 
     // เงื่อนไขเริ่มต้น: คำทักทายทั่วไป
